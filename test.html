@@ -37,7 +37,7 @@ window.onload = function () {
 
 function getExif(photoId) {
     var img = document.getElementById(photoId);
-    window.exifr.gps(img, ['CreateDate', 'latitude', 'longitude']).then(function(exif){
+    window.exifr.parse(img, ['CreateDate', 'latitude', 'longitude']).then(function(exif){
         document.getElementById(photoId + "_exif").innerHTML = JSON.stringify(exif, null, "\t");
         if (photoId === 'img') {
             defaultPos = [exif.latitude, exif.longitude];
