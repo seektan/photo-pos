@@ -9,8 +9,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/exifr/dist/lite.umd.js"></script>
 <script>
+var defaultPos = null;
 function init() {
-  var myLatlng = new qq.maps.LatLng(39.916527, 116.397128);
+    if (!defaultPos) return;
+  var myLatlng = new qq.maps.LatLng(defaultPos[0], defaultPos[1]);
   var myOptions = {
     zoom: 8,
     center: myLatlng,
@@ -28,7 +30,6 @@ function loadScript() {
 }
  
 window.onload = function () {
-    loadScript();
     getExif('img');
     getExif('img1');
     getExif('img2');
@@ -36,8 +37,12 @@ window.onload = function () {
 
 function getExif(photoId) {
     var img = document.getElementById(photoId);
-    window.exifr.parse(img).then(function(exif){
+    window.exifr.gps(img, ['CreateDate', 'latitude', 'longitude']).then(function(exif){
         document.getElementById(photoId + "_exif").innerHTML = JSON.stringify(exif, null, "\t");
+        if (photoId === 'img') {
+            defaultPos = [exif.latitude, exif.longitude];
+            loadScript();
+        }
     });
 }
 </script>
