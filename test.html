@@ -7,7 +7,7 @@
 <img src="./test1.jpg" id="img1" width="200" />
 <img src="./test2.jpg" id="img2" width="200" />
 
-<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exifr/dist/lite.umd.js"></script>
 <script>
 function init() {
   var myLatlng = new qq.maps.LatLng(39.916527, 116.397128);
@@ -36,8 +36,8 @@ window.onload = function () {
 
 function getExif(photoId) {
     var img = document.getElementById(photoId);
-    EXIF.getData(img, function() {
-        document.getElementById(photoId + "_exif").innerHTML = JSON.stringify(img.exifdata, null, "\t");
+    window.exifr.gps(img).then(function(exif){
+        document.getElementById(photoId + "_exif").innerHTML = JSON.stringify(exif, null, "\t");
     });
 }
 </script>
