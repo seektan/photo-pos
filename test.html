@@ -1,7 +1,9 @@
 <div id="container" style="width:500px; height:300px"></div>
 
 <img src="./test.jpg" id="img1" />
-<pre id="allMetaDataSpan"></pre>
+<pre id="exif1"></pre>
+<img src="./cathedral.jpg" id="img2" />
+<pre id="exif2"></pre>
 
 <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 <script>
@@ -30,10 +32,17 @@ window.onload = function () {
 
 function getExif() {
     var img1 = document.getElementById("img1");
+    var img2 = document.getElementById("img2");
     EXIF.getData(img1, function() {
-        var allMetaData = img1.exifdata;
-        var allMetaDataSpan = document.getElementById("allMetaDataSpan");
-        allMetaDataSpan.innerHTML = JSON.stringify(allMetaData, null, "\t");
+        var exifData = img1.exifdata;
+        var allMetaDataSpan = document.getElementById("exif1");
+        allMetaDataSpan.innerHTML = JSON.stringify(exifData, null, "\t");
+    });
+  
+    EXIF.getData(img2, function() {
+        var exifData = img1.exifdata;
+        var allMetaDataSpan = document.getElementById("exif2");
+        allMetaDataSpan.innerHTML = JSON.stringify(exifData, null, "\t");
     });
 }
 </script>
