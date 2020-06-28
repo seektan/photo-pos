@@ -36,7 +36,7 @@ window.onload = function () {
 
 function getExif(photoId) {
     var img = document.getElementById(photoId);
-    window.exifr.gps(img).then(function(exif){
+    window.exifr.parse(img).then(function(exif){
         document.getElementById(photoId + "_exif").innerHTML = JSON.stringify(exif, null, "\t");
     });
 }
