@@ -1,9 +1,11 @@
 <div id="container" style="width:500px; height:300px"></div>
 
-<img src="./test.jpg" id="img1" />
-<pre id="exif1"></pre>
-<img src="./cathedral.jpg" id="img2" />
-<pre id="exif2"></pre>
+<pre id="img_exif"></pre>
+<pre id="img1_exif"></pre>
+<pre id="img2_exif"></pre>
+<img src="./test.jpg" id="img" width="200" />
+<img src="./test1.jpg" id="img1" width="200" />
+<img src="./test2.jpg" id="img2" width="200" />
 
 <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 <script>
@@ -27,22 +29,15 @@ function loadScript() {
  
 window.onload = function () {
     loadScript();
-    getExif();
+    getExif('img');
+    getExif('img1');
+    getExif('img2');
 }
 
-function getExif() {
-    var img1 = document.getElementById("img1");
-    var img2 = document.getElementById("img2");
-    EXIF.getData(img1, function() {
-        var exifData = img1.exifdata;
-        var allMetaDataSpan = document.getElementById("exif1");
-        allMetaDataSpan.innerHTML = JSON.stringify(exifData, null, "\t");
-    });
-  
-    EXIF.getData(img2, function() {
-        var exifData = img1.exifdata;
-        var allMetaDataSpan = document.getElementById("exif2");
-        allMetaDataSpan.innerHTML = JSON.stringify(exifData, null, "\t");
+function getExif(photoId) {
+    var img = document.getElementById(photoId);
+    EXIF.getData(img, function() {
+        document.getElementById(photoId + "_exif").innerHTML = JSON.stringify(img.exifdata, null, "\t");
     });
 }
 </script>
