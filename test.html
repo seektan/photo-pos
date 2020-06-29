@@ -1,14 +1,46 @@
 <div id="container" style="width:500px; height:300px"></div>
 
-<pre id="img_exif"></pre>
-<pre id="img1_exif"></pre>
-<pre id="img2_exif"></pre>
-<img src="./test.jpg" id="img" width="200" />
-<img src="./test1.jpg" id="img1" width="200" />
-<img src="./test2.jpg" id="img2" width="200" />
+<div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);" style="width:200px; height:50px">
+  <p>Drag one or more files to this Drop Zone ...</p>
+</div>
+<style>
+#preview img{width: 200px;margin: 10px;}
+</style>
+<div id="preview"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/exifr/dist/lite.umd.js"></script>
 <script>
+var preview = document.getElementById('preview');
+function dropHandler(ev) {
+  console.log('File(s) dropped');
+
+  // Prevent default behavior (Prevent file from being opened)
+  ev.preventDefault();
+
+  for (const file of ev.dataTransfer.files) {
+    const reader = new FileReader();
+    reader.addEventListener('load', (event) => {
+      var img = document.createElement('img');
+      img.src = event.target.result;
+      img.crossOrigin = "anonymous";
+      preview.appendChild(img);
+      console.log('files data: ', img);
+      window.exifr.parse(img).then(function(exif){
+        console.log('files exif: ', exif);
+      });
+    });
+    reader.readAsDataURL(file);
+  };
+}
+function dragOverHandler(ev) {
+  console.log('File(s) in drop zone'); 
+
+  // Prevent default behavior (Prevent file from being opened)
+  ev.preventDefault();
+}
+
+
+
 var defaultPos = null;
 function init() {
     if (!defaultPos) return;
@@ -30,9 +62,9 @@ function loadScript() {
 }
  
 window.onload = function () {
-    getExif('img');
-    getExif('img1');
-    getExif('img2');
+    // getExif('img');
+    // getExif('img1');
+    // getExif('img2');
 }
 
 function getExif(photoId) {
