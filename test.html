@@ -102,12 +102,18 @@ function appendMarkers() {
         info.close();
         return;
       }
+      photoList.forEach(item => {
+        if (item.info && item.info.visible) {
+          item.info.close();
+        }
+      });
       info.open();
       info.setContent('<div class="photo-info"><p>' + num + photo.time + '</p><img src="' + photo.src + '" width="500"/></div>');
       info.setPosition(photo.latLng); 
         map.panTo(photo.latLng);
     };
     qq.maps.event.addListener(marker, 'click', openInfo);
+    photoList[i].info = info;
     // 添加到图片列表
     var title = document.createElement('p');
     var img = document.createElement('img');
