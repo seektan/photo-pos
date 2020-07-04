@@ -81,8 +81,10 @@ function appendMarkers() {
       rePos = true;
     }
     //创建标记
+    var decoration = new qq.maps.MarkerDecoration(i, new qq.maps.Point(0, -5));
     var marker = new qq.maps.Marker({
       position: photo.latLng,
+      decoration: decoration,
       map: map
     });
     //添加到提示窗
