@@ -17,6 +17,7 @@ html,body{margin: 0;padding: 0;font: 14px/1.6;height:100%;}
 .preview-wrap img{width: 180px;margin: 10px auto;}
 </style>
 
+<script src="https://map.qq.com/api/js?v=2.exp&key=D3SBZ-M37KQ-IU55Z-GZ45Q-6GBCV-OYB34"></script>
 <script src="https://cdn.jsdelivr.net/npm/exifr/dist/lite.umd.js"></script>
 <script>
 function b64toBlob(base64, contentType) {
@@ -46,39 +47,65 @@ function dropHandler(ev) {
       var blobUrl = URL.createObjectURL(blob);
       img.src = blobUrl;
       preview.appendChild(img);
-      window.exifr.parse(blobUrl).then(function(exif){
-        if (!defaultPos && exif.latitude) {
-          defaultPos = [exif.latitude, exif.longitude];
-          loadMap();
-        }
+      window.exifr.parse(blobUrl).then(function(exif) {
+        pohotoList.push({
+          exif: exif,
+          src: blobUrl,
+          latLng: exif.latitude ? new qq.maps.LatLng(exif.latitude, exif.longitude) : null,
+          time: exif.DateTimeOriginal ? exif.DateTimeOriginal.toLocaleString() : ''
+        });
         console.log('files exif: ', exif);
       });
     });
     reader.readAsDataURL(file);
   };
+  appendMarkers();
 }
+
 function dragOverHandler(ev) {
   ev.preventDefault();
 }
-
+  
+function appendMarkers() {
+  pohotoList.forEach(photo => {
+    if (!photo.latLng) return;
+    // 移动到第一个位置
+    if (!rePos) {
+      map.panTo(photo.latLng);
+      rePos = true;
+    }
+    //创建标记
+    var marker = new qq.maps.Marker({
+        position: photo.latLng,
+        map: map
+    });
+    //添加到提示窗
+    var info = new qq.maps.InfoWindow({
+        map: map
+    });
+    //获取标记的点击事件
+    qq.maps.event.addListener(marker, 'click', () => {
+        info.open(); 
+        info.setContent('<pre>' + JSON.stringify(photo.exif) + '</pre>');
+        info.setPosition(photo.latLng); 
+        map.panTo(photo.latLng);
+    });    
+  });
+}
 
 var preview = document.getElementById('preview');
-var defaultPos = null;
-function initMap() {
-  if (!defaultPos) return;
-  var myLatlng = new qq.maps.LatLng(defaultPos[0], defaultPos[1]);
+var defaultLatLng = new qq.maps.LatLng(39.916527,116.397128);
+var map = null;
+var pohotoList = [];
+var rePos = false;
+initMap();
+function initMap(latLng) {
   var myOptions = {
     zoom: 13,
-    center: myLatlng,
+    center: latLng || defaultLatLng,
     mapTypeId: qq.maps.MapTypeId.ROADMAP
   }
-  var map = new qq.maps.Map(document.getElementById("container"), myOptions);  
-} 
-function loadMap() {
-  var script = document.createElement("script");
-  script.type = "text/javascript";
-  script.src = "https://map.qq.com/api/js?v=2.exp&key=D3SBZ-M37KQ-IU55Z-GZ45Q-6GBCV-OYB34&callback=initMap";
-  document.body.appendChild(script);
+  map = new qq.maps.Map(document.getElementById("container"), myOptions);  
 }
 
 </script>
