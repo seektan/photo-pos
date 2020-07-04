@@ -81,7 +81,8 @@ function appendMarkers() {
       rePos = true;
     }
     //创建标记
-    var decoration = new qq.maps.MarkerDecoration(i, new qq.maps.Point(0, -5));
+    const num = '<span class="num">' + (i + 1) + '</span>';
+    var decoration = new qq.maps.MarkerDecoration(num, new qq.maps.Point(0, -5));
     var marker = new qq.maps.Marker({
       position: photo.latLng,
       decoration: decoration,
@@ -99,7 +100,7 @@ function appendMarkers() {
         return;
       }
       info.open();
-      info.setContent('<div class="photo-info"><p>' + i + ': ' + photo.time + '</p><img src="' + photo.src + '" width="400"/></div>');
+      info.setContent('<div class="photo-info"><p>' + photo.time + '</p><img src="' + photo.src + '" width="500"/></div>');
       info.setPosition(photo.latLng); 
         map.panTo(photo.latLng);
     };
@@ -107,7 +108,7 @@ function appendMarkers() {
     // 添加到图片列表
     var title = document.createElement('p');
     var img = document.createElement('img');
-    title.innerHTML = photo.time;
+    title.innerHTML = num + ': ' + photo.time;
     img.src = photo.src;
     preview.appendChild(title);
     preview.appendChild(img);
