@@ -82,7 +82,7 @@ function appendMarkers(photo) {
   //获取标记的点击事件
   function openInfo() {
     info.open(); 
-    info.setContent('<div class="photo-info"><img src="' + photo.src + '" width="400" title="' + JSON.stringify(photo.exif, null, 2) + '" /></div>');
+    info.setContent('<div class="photo-info"><p>' + photo.time + '</p><img src="' + photo.src + '" width="400"/></div>');
     info.setPosition(photo.latLng); 
       map.panTo(photo.latLng);
   };
