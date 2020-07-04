@@ -91,6 +91,12 @@ function appendMarkers() {
       decoration: decoration,
       map: map
     });
+    var label = new qq.maps.Label({
+        position: photo.latLng,
+        map: map,
+        content: num + photo.latLng,
+        offset: new qq.maps.Size(-10, 0)
+    });
     //添加到提示窗
     var info = new qq.maps.InfoWindow({
       map: map,
@@ -110,7 +116,7 @@ function appendMarkers() {
       info.open();
       info.setContent('<div class="photo-info"><p>' + num + photo.time + '</p><img src="' + photo.src + '" width="500"/></div>');
       info.setPosition(photo.latLng); 
-        map.panTo(photo.latLng);
+      map.panTo(photo.latLng);
     };
     qq.maps.event.addListener(marker, 'click', openInfo);
     photoList[i].info = info;
