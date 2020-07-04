@@ -45,8 +45,6 @@ function dropHandler(ev) {
   ev.preventDefault();
   const fileLength = ev.dataTransfer.files.length;
   let loadedFileLength = 0;
-  rePos = false;
-  photoList = [];
   for (const file of ev.dataTransfer.files) {
     const reader = new FileReader();
     reader.addEventListener('load', (event) => {
