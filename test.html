@@ -79,13 +79,23 @@ function appendMarkers() {
   preview.innerHTML = '';
   photoList.forEach((photo, i) => {
     if (!photo.latLng) return;
+    
+    // 添加到图片列表
+    var title = document.createElement('p');
+    var img = document.createElement('img');
+    var num = '<span class="num">' + (i + 1) + '</span>';
+    title.innerHTML = num + photo.time;
+    img.src = photo.src;
+    preview.appendChild(title);
+    preview.appendChild(img);
+    
+    if (photo.info) return;
     // 移动到第一个位置
     if (!rePos) {
       map.panTo(photo.latLng);
       rePos = true;
     }
     //创建标记
-    const num = '<span class="num">' + (i + 1) + '</span>';
     var decoration = new qq.maps.MarkerDecoration(num, new qq.maps.Point(0, -5));
     var marker = new qq.maps.Marker({
       position: photo.latLng,
@@ -115,13 +125,6 @@ function appendMarkers() {
     };
     qq.maps.event.addListener(marker, 'click', openInfo);
     photoList[i].info = info;
-    // 添加到图片列表
-    var title = document.createElement('p');
-    var img = document.createElement('img');
-    title.innerHTML = num + photo.time;
-    img.src = photo.src;
-    preview.appendChild(title);
-    preview.appendChild(img);
     img.addEventListener('click', openInfo);
   });
 }
