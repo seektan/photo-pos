@@ -77,7 +77,8 @@ function appendMarkers(photo) {
   });
   //添加到提示窗
   var info = new qq.maps.InfoWindow({
-    map: map
+    map: map,
+    zIndex: 9
   });
   //获取标记的点击事件
   function openInfo() {
@@ -85,7 +86,6 @@ function appendMarkers(photo) {
       info.close();
       return;
     }
-    info.zIndex = 9;
     info.setContent('<div class="photo-info"><p>' + photo.time + '</p><img src="' + photo.src + '" width="400"/></div>');
     info.setPosition(photo.latLng); 
       map.panTo(photo.latLng);
