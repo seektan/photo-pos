@@ -15,10 +15,6 @@
   .drop-wrap p{padding: 25px;}
   .preview-wrap{height:calc(100% - 100px);overflow-y: auto;text-align: center;}
   .preview-wrap img{width: 180px;margin: 10px auto;}
-  .photo-info pre,
-  .photo-info:hover img{display:none}
-  .photo-info img,
-  .photo-info:hover pre{display:block}
 </style>
 
 <script src="https://map.qq.com/api/js?v=2.exp&key=D3SBZ-M37KQ-IU55Z-GZ45Q-6GBCV-OYB34"></script>
@@ -46,11 +42,8 @@ function dropHandler(ev) {
   for (const file of ev.dataTransfer.files) {
     const reader = new FileReader();
     reader.addEventListener('load', (event) => {
-      var img = document.createElement('img');
       var blob = b64toBlob(event.target.result.split(',')[1], 'image/jpg');
       var blobUrl = URL.createObjectURL(blob);
-      img.src = blobUrl;
-      preview.appendChild(img);
       window.exifr.parse(blobUrl).then(function(exif) {
         var photo = {
           exif: exif,
@@ -87,12 +80,18 @@ function appendMarkers(photo) {
     map: map
   });
   //获取标记的点击事件
-  qq.maps.event.addListener(marker, 'click', () => {
+  function openInfo() {
     info.open(); 
-    info.setContent('<div class="photo-info"><img src="' + photo.src + '" width="400" /><pre>' + JSON.stringify(photo.exif, null, 2) + '</pre></div>');
+    info.setContent('<div class="photo-info"><img src="' + photo.src + '" width="400" title="' + JSON.stringify(photo.exif, null, 2) + '" /></div>');
     info.setPosition(photo.latLng); 
       map.panTo(photo.latLng);
-  });
+  };
+  qq.maps.event.addListener(marker, 'click', openInfo);
+  // 添加到图片列表
+  var img = document.createElement('img');
+  img.src = photo.src;
+  preview.appendChild(img);
+  img.addListener('click', openInfo);
 }
 
 var preview = document.getElementById('preview');
