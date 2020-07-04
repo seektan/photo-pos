@@ -15,6 +15,7 @@
   .drop-wrap p{padding: 25px;}
   .preview-wrap{height:calc(100% - 100px);overflow-y: auto;text-align: center;}
   .preview-wrap img{width: 180px;margin: 10px auto;cursor:pointer}
+  .label-wrap{background: url(./icon.png) no-repeat 0 50%;padding-left: 18px;background-size: contain;}
 </style>
 
 <script src="https://map.qq.com/api/js?v=2.exp&key=D3SBZ-M37KQ-IU55Z-GZ45Q-6GBCV-OYB34"></script>
@@ -71,9 +72,10 @@ function appendMarkers(photo) {
     rePos = true;
   }
   //创建标记
-  var marker = new qq.maps.Marker({
+  var marker = new qq.maps.Label({
     position: photo.latLng,
-    map: map
+    map: map,
+    content: '<p class="label-wrap">' + photo.time + '</p>'
   });
   //添加到提示窗
   var info = new qq.maps.InfoWindow({
