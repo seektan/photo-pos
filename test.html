@@ -83,17 +83,15 @@ function appendMarkers() {
     }
     //创建标记
     const num = '<span class="num">' + (i + 1) + '</span>';
-    var decoration = new qq.maps.MarkerDecoration(num, new qq.maps.Point(0, -5));
     var marker = new qq.maps.Marker({
       position: photo.latLng,
-      decoration: decoration,
       map: map
     });
     var label = new qq.maps.Label({
         position: photo.latLng,
         map: map,
         content: num + photo.time,
-        offset: new qq.maps.Size(32, -40)
+        offset: new qq.maps.Size(12, -35)
     });
     //添加到提示窗
     var info = new qq.maps.InfoWindow({
