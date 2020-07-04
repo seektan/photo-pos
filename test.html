@@ -73,7 +73,7 @@ function appendMarkers() {
   photoList = photoList.sort((a, b) => {
     return a.exif.DateTimeOriginal.getTime() - b.exif.DateTimeOriginal.getTime();
   });
-  photoList.forEach(photo => {
+  photoList.forEach((photo, i) => {
     if (!photo.latLng) return;
     // 移动到第一个位置
     if (!rePos) {
@@ -97,7 +97,7 @@ function appendMarkers() {
         return;
       }
       info.open();
-      info.setContent('<div class="photo-info"><p>' + photo.time + '</p><img src="' + photo.src + '" width="400"/></div>');
+      info.setContent('<div class="photo-info"><p>' + i + ': ' + photo.time + '</p><img src="' + photo.src + '" width="400"/></div>');
       info.setPosition(photo.latLng); 
         map.panTo(photo.latLng);
     };
