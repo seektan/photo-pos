@@ -16,9 +16,7 @@
   .preview-wrap{height:calc(100% - 100px);overflow-y: auto;text-align: center;}
   .preview-wrap p{margin:10px 0 0;font-size:12px;}
   .preview-wrap img{width: 180px;margin: 4px auto 10px;cursor:pointer}
-  .num{color:#eee}
-  .preview-wrap .num,
-  .photo-info .num {font-weight: bold;background: #48a5da;padding: 0 5px;border-radius: 10px;margin-right:5px;}
+  .num{color:#eee;font-weight: bold;background: #48a5da;padding: 0 5px;border-radius: 10px;margin-right:5px;}
 </style>
 
 <script src="https://map.qq.com/api/js?v=2.exp&key=D3SBZ-M37KQ-IU55Z-GZ45Q-6GBCV-OYB34"></script>
@@ -94,8 +92,8 @@ function appendMarkers() {
     var label = new qq.maps.Label({
         position: photo.latLng,
         map: map,
-        content: num + photo.latLng,
-        offset: new qq.maps.Size(-10, 0)
+        content: num + photo.time,
+        offset: new qq.maps.Size(32, -40)
     });
     //添加到提示窗
     var info = new qq.maps.InfoWindow({
