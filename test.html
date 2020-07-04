@@ -81,7 +81,11 @@ function appendMarkers(photo) {
   });
   //获取标记的点击事件
   function openInfo() {
-    info.open(); 
+    if (info.visible) {
+      info.close();
+      return;
+    }
+    info.zIndex = 9;
     info.setContent('<div class="photo-info"><p>' + photo.time + '</p><img src="' + photo.src + '" width="400"/></div>');
     info.setPosition(photo.latLng); 
       map.panTo(photo.latLng);
