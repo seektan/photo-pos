@@ -40,20 +40,25 @@ function b64toBlob(base64, contentType) {
 
 function dropHandler(ev) {
   ev.preventDefault();
+  const fileLength = ev.dataTransfer.files.length;
+  let loadedFileLength = 0;
   for (const file of ev.dataTransfer.files) {
     const reader = new FileReader();
     reader.addEventListener('load', (event) => {
       var blob = b64toBlob(event.target.result.split(',')[1], 'image/jpg');
       var blobUrl = URL.createObjectURL(blob);
       window.exifr.parse(blobUrl).then(function(exif) {
-        var photo = {
+        loadedFileLength += 1;
+        const photo = {
           exif: exif,
           src: blobUrl,
           latLng: exif.latitude ? new qq.maps.LatLng(exif.latitude, exif.longitude) : null,
           time: exif.DateTimeOriginal ? exif.DateTimeOriginal.toLocaleString() : ''
         };
         photoList.push(photo);
-        appendMarkers(photo);
+        if (loadedFileLength === fileLength) {
+          appendMarkers();
+        }
       });
     });
     reader.readAsDataURL(file);
@@ -64,43 +69,48 @@ function dragOverHandler(ev) {
   ev.preventDefault();
 }
   
-function appendMarkers(photo) {
-  if (!photo.latLng) return;
-  // 移动到第一个位置
-  if (!rePos) {
-    map.panTo(photo.latLng);
-    rePos = true;
-  }
-  //创建标记
-  var marker = new qq.maps.Marker({
-    position: photo.latLng,
-    map: map
+function appendMarkers() {
+  photoList = photoList.sort((a, b) => {
+    return a.exif.DateTimeOriginal.getTime() - b.exif.DateTimeOriginal.getTime();
   });
-  //添加到提示窗
-  var info = new qq.maps.InfoWindow({
-    map: map,
-    zIndex: 9
-  });
-  //获取标记的点击事件
-  function openInfo() {
-    if (info.visible) {
-      info.close();
-      return;
-    }
-    info.open();
-    info.setContent('<div class="photo-info"><p>' + photo.time + '</p><img src="' + photo.src + '" width="400"/></div>');
-    info.setPosition(photo.latLng); 
+  photoList.forEach(photo => {
+    if (!photo.latLng) return;
+    // 移动到第一个位置
+    if (!rePos) {
       map.panTo(photo.latLng);
-  };
-  qq.maps.event.addListener(marker, 'click', openInfo);
-  // 添加到图片列表
-  var title = document.createElement('p');
-  var img = document.createElement('img');
-  title.innerHTML = photo.time;
-  img.src = photo.src;
-  preview.appendChild(title);
-  preview.appendChild(img);
-  img.addEventListener('click', openInfo);
+      rePos = true;
+    }
+    //创建标记
+    var marker = new qq.maps.Marker({
+      position: photo.latLng,
+      map: map
+    });
+    //添加到提示窗
+    var info = new qq.maps.InfoWindow({
+      map: map,
+      zIndex: 9
+    });
+    //获取标记的点击事件
+    function openInfo() {
+      if (info.visible) {
+        info.close();
+        return;
+      }
+      info.open();
+      info.setContent('<div class="photo-info"><p>' + photo.time + '</p><img src="' + photo.src + '" width="400"/></div>');
+      info.setPosition(photo.latLng); 
+        map.panTo(photo.latLng);
+    };
+    qq.maps.event.addListener(marker, 'click', openInfo);
+    // 添加到图片列表
+    var title = document.createElement('p');
+    var img = document.createElement('img');
+    title.innerHTML = photo.time;
+    img.src = photo.src;
+    preview.appendChild(title);
+    preview.appendChild(img);
+    img.addEventListener('click', openInfo);
+  });
 }
 
 var preview = document.getElementById('preview');
