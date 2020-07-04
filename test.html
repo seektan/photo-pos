@@ -86,6 +86,7 @@ function appendMarkers(photo) {
       info.close();
       return;
     }
+    info.open();
     info.setContent('<div class="photo-info"><p>' + photo.time + '</p><img src="' + photo.src + '" width="400"/></div>');
     info.setPosition(photo.latLng); 
       map.panTo(photo.latLng);
