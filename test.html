@@ -93,8 +93,11 @@ function appendMarkers(photo) {
   };
   qq.maps.event.addListener(marker, 'click', openInfo);
   // 添加到图片列表
+  var title = document.createElement('p');
   var img = document.createElement('img');
+  title.innerHTML = photo.time;
   img.src = photo.src;
+  preview.appendChild(title);
   preview.appendChild(img);
   img.addEventListener('click', openInfo);
 }
