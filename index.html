@@ -132,11 +132,35 @@ function appendMarkers() {
       info.open();
       info.setContent('<div class="photo-info"><p>' + num + photo.time + '</p><img src="' + photo.src + '" width="600"/></div>');
       info.setPosition(photo.latLng); 
-        map.panTo(photo.latLng);
+      map.panTo(photo.latLng);
     };
     qq.maps.event.addListener(marker, 'click', openInfo);
     photoList[i].info = info;
     img.addEventListener('click', openInfo);
+    
+    var exifInfo = new qq.maps.InfoWindow({
+      map: map,
+      zIndex: 9
+    });
+    //获取标记的点击事件
+    function openExifInfo() {
+      if (exifInfo.visible) {
+        exifInfo.close();
+        return;
+      }
+      photoList.forEach(item => {
+        if (item.exifInfo && item.exifInfo.visible) {
+          item.exifInfo.close();
+        }
+      });
+      exifInfo.open();
+      exifInfo.setContent('<div class="photo-info"><pre>' + JSON.stringify(photo.exif, null, 2) + '</pre></div>');
+      exifInfo.setPosition(photo.latLng); 
+      map.panTo(photo.latLng);
+    };
+    photoList[i].exifInfo = exifInfo;
+    title.addEventListener('click', openExifInfo);
+
   });
 }
 
