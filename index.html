@@ -77,7 +77,7 @@ function translateLatlngs() {
   qq.maps.convertor.translate(points, 1, res => {
     if(res && res.length === photoList.length) {
       res.forEach((p, i) => {
-        photoList[i].latlng = res[i]
+        photoList[i].latLng = res[i]
       });
     }
     appendMarkers();
