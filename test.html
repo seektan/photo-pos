@@ -1,0 +1,146 @@
+<div id="container" class="map"></div>
+
+<div class="photos">
+  <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);" class="drop-wrap">
+    <p>请将照片拖到这里来</p>
+  </div>
+  <div id="preview" class="preview-wrap"></div>
+</div>
+
+<style>
+  html,body{margin: 0;padding: 0;font: 14px/1.6 arial;height:100%;}
+  .map{width: 100%; height: 100%;}
+  .photos{width:200px;padding: 5px;background: rgba(256, 256, 256, .8); position: absolute;top:36px;right: 5px;height:calc(100% - 72px);}
+  .drop-wrap{height:100px;border:1px dashed #999;}
+  .drop-wrap p{padding: 25px;}
+  .preview-wrap{height:calc(100% - 100px);overflow-y: auto;text-align: center;}
+  .preview-wrap p{margin:10px 0 0;font-size:12px;}
+  .preview-wrap img{width: 180px;margin: 4px auto 10px;cursor:pointer}
+  .num{color:#eee}
+  .preview-wrap .num,
+  .photo-info .num {font-weight: bold;background: #48a5da;padding: 0 5px;border-radius: 10px;margin-right:5px;}
+</style>
+
+<script src="https://map.qq.com/api/js?v=2.exp&key=D3SBZ-M37KQ-IU55Z-GZ45Q-6GBCV-OYB34"></script>
+<script src="https://cdn.jsdelivr.net/npm/exifr/dist/lite.umd.js"></script>
+<script>
+function b64toBlob(base64, contentType) {
+  var sliceSize = 1024;
+  var byteCharacters = atob(base64);
+  var slicesCount = Math.ceil(byteCharacters.length / sliceSize);
+  var byteArrays = new Array(slicesCount);
+  for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
+    var begin = sliceIndex * sliceSize;
+    var end = Math.min(begin + sliceSize, byteCharacters.length);
+    var bytes = new Array(end - begin);
+    for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
+      bytes[i] = byteCharacters[offset].charCodeAt(0);
+    }
+    byteArrays[sliceIndex] = new Uint8Array(bytes);
+  }  
+  return new Blob(byteArrays, { type: contentType || '' });
+}
+
+function dropHandler(ev) {
+  ev.preventDefault();
+  const fileLength = ev.dataTransfer.files.length;
+  let loadedFileLength = 0;
+  for (const file of ev.dataTransfer.files) {
+    const reader = new FileReader();
+    reader.addEventListener('load', (event) => {
+      var blob = b64toBlob(event.target.result.split(',')[1], 'image/jpg');
+      var blobUrl = URL.createObjectURL(blob);
+      window.exifr.parse(blobUrl).then(function(exif) {
+        loadedFileLength += 1;
+        const photo = {
+          exif: exif,
+          src: blobUrl,
+          latLng: exif.latitude ? new qq.maps.LatLng(exif.latitude, exif.longitude) : null,
+          time: exif.DateTimeOriginal ? exif.DateTimeOriginal.toLocaleString() : ''
+        };
+        photoList.push(photo);
+        if (loadedFileLength === fileLength) {
+          appendMarkers();
+        }
+      });
+    });
+    reader.readAsDataURL(file);
+  };
+}
+
+function dragOverHandler(ev) {
+  ev.preventDefault();
+}
+  
+function appendMarkers() {
+  photoList = photoList.sort((a, b) => {
+    return a.exif.DateTimeOriginal.getTime() - b.exif.DateTimeOriginal.getTime();
+  });
+  preview.innerHTML = '';
+  photoList.forEach((photo, i) => {
+    if (!photo.latLng) return;
+    
+    // 添加到图片列表
+    var title = document.createElement('p');
+    var img = document.createElement('img');
+    var num = '<span class="num">' + (i + 1) + '</span>';
+    title.innerHTML = num + photo.time;
+    img.src = photo.src;
+    preview.appendChild(title);
+    preview.appendChild(img);
+    
+    // 移动到第一个位置
+    if (!rePos) {
+      map.panTo(photo.latLng);
+      rePos = true;
+    }
+    //创建标记
+    var decoration = new qq.maps.MarkerDecoration(num, new qq.maps.Point(0, -5));
+    var marker = new qq.maps.Marker({
+      position: photo.latLng,
+      decoration: decoration,
+      map: map
+    });
+    //添加到提示窗
+    var info = new qq.maps.InfoWindow({
+      map: map,
+      zIndex: 9
+    });
+    //获取标记的点击事件
+    function openInfo() {
+      if (info.visible) {
+        info.close();
+        return;
+      }
+      photoList.forEach(item => {
+        if (item.info && item.info.visible) {
+          item.info.close();
+        }
+      });
+      info.open();
+      info.setContent('<div class="photo-info"><p>' + num + photo.time + '</p><img src="' + photo.src + '" width="600"/></div>');
+      info.setPosition(photo.latLng); 
+        map.panTo(photo.latLng);
+    };
+    qq.maps.event.addListener(marker, 'click', openInfo);
+    photoList[i].info = info;
+    img.addEventListener('click', openInfo);
+  });
+}
+
+var preview = document.getElementById('preview');
+var defaultLatLng = new qq.maps.LatLng(39.916527,116.397128);
+var map = null;
+var photoList = [];
+var rePos = false;
+initMap();
+function initMap(latLng) {
+  var myOptions = {
+    zoom: 13,
+    center: latLng || defaultLatLng,
+    mapTypeId: qq.maps.MapTypeId.ROADMAP
+  }
+  map = new qq.maps.Map(document.getElementById("container"), myOptions);  
+}
+
+</script>
