@@ -72,8 +72,8 @@ function dragOverHandler(ev) {
   ev.preventDefault();
 }
 
-function translateLatlngs(photos, cb) {
-  var points = photoList.map(p => p.latlng);
+function translateLatlngs() {
+  var points = photoList.map(p => p.latLng);
   qq.maps.convertor.translate(points, 1, res => {
     if(res && res.length === photoList.length) {
       res.forEach((p, i) => {
