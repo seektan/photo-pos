@@ -21,7 +21,7 @@
   .photo-info .num {font-weight: bold;background: #48a5da;padding: 0 5px;border-radius: 10px;margin-right:5px;}
 </style>
 
-<script src="https://map.qq.com/api/js?v=2.exp&key=D3SBZ-M37KQ-IU55Z-GZ45Q-6GBCV-OYB34"></script>
+<script src="https://map.qq.com/api/js?v=2.exp&key=D3SBZ-M37KQ-IU55Z-GZ45Q-6GBCV-OYB34&libraries=convertor"></script>
 <script src="https://cdn.jsdelivr.net/npm/exifr/dist/lite.umd.js"></script>
 <script>
 function b64toBlob(base64, contentType) {
@@ -60,7 +60,7 @@ function dropHandler(ev) {
         };
         photoList.push(photo);
         if (loadedFileLength === fileLength) {
-          appendMarkers();
+          translateLatlngs();
         }
       });
     });
@@ -70,6 +70,18 @@ function dropHandler(ev) {
 
 function dragOverHandler(ev) {
   ev.preventDefault();
+}
+
+function translateLatlngs(photos, cb) {
+  var points = photoList.map(p => p.latlng);
+  qq.maps.convertor.translate(points, 1, res => {
+    if(res && res.length === photoList.length) {
+      res.forEach((p, i) => {
+        photoList[i].latlng = res[i]
+      });
+    }
+    appendMarkers();
+  });
 }
   
 function appendMarkers() {
